@@ -2,22 +2,38 @@
 
 const axios = require('axios');
 
+let cache = {};
+
 async function getWeather(request, response, next) {
 
   try {
     let lat = request.query.lat;
     let lon = request.query.lon;
-    let url = `http://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}&days=5&units=I`;
-    let weatherData = await axios.get(url);
-    // console.log('Here is the weather data', weatherData);
+    let key = `${lat}, ${lon}Forecast`;
+    if (cache[key] && (Date.now() - cache[key].timeStamp) < 10000) {
+      console.log('Weather Cache hit!');
+      response.status(200).send(cache[key].data);
+    } else {
+      console.log('No Weather Cache');
+
+      let url = `http://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}&days=5&units=I`;
+      let weatherData = await axios.get(url);
 
 
-    let groomWeather = weatherData.data.data;
+      let groomWeather = weatherData.data.data;
 
-    let dataToSend = groomWeather.map((day) => new Forecast(day));
+      let dataToSend = groomWeather.map((day) => new Forecast(day));
 
-    // console.log('second log', dataToSend);
-    response.status(200).send(dataToSend);
+      cache[key] = {
+        data: dataToSend,
+        timeStamp: Date.now()
+      };
+
+      response.status(200).send(dataToSend);
+
+    }
+
+
   } catch (error) {
     next(error);
   }

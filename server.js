@@ -1,6 +1,6 @@
 'use strict';
 
-console.log('First Server');
+console.log('Server Online');
 
 // ***** Requires *****
 
@@ -9,15 +9,6 @@ require('dotenv').config();
 const cors = require('cors');
 const getWeather = require('./modules/weather');
 const getMovies = require('./modules/movies');
-
-
-// **** Don't forget to require your starter JSON
-
-// let data = require('./data/weather.json');
-
-
-// ***** once express is in we need to use it
-// ***** app === server
 const app = express();
 
 
@@ -27,15 +18,9 @@ const app = express();
 app.use(cors());
 
 
-// ***** Define a port for server to run on
 const PORT = process.env.PORT || 3002;
 
-// ***** ENDPOINTS
-// ***** Base endpoint - proof of life
-// ***** 1st rg - endpoint in quotes
-// ***** 2nd arg - callback which will execute when someone hits that point
 
-// ***** Callback function - 2 parameters: request, response (req,res)
 app.get('/', (request, response) => {
   response.status(200).send('Welcome to my server');
 });
